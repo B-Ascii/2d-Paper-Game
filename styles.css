@@ -1,0 +1,38 @@
+
+/*going for a simple look*/
+#backBoard{
+    position:absolute;
+    width:100%;
+    height: 100vh;
+    z-index: -10;
+    background-color: lightgray;
+    left:0px;
+    top:0px;
+
+}
+#gameMat{
+    position:absolute;
+    width:80vh;
+    height: 80vh;
+    z-index: -9;
+    background-color: lightgray;
+    left:10vh;
+    top:10vh;
+
+}
+#intro{
+    
+        position:absolute;
+        width:50vh;
+        height: 10vh;
+       z-index: 3;
+        background-color: gray;
+        padding-top: 5%;
+        text-align: center;
+        left:50vw;
+        top:35vh;
+        border-radius: 6%;
+    
+    
+
+}

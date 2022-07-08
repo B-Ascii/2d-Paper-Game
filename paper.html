@@ -1,0 +1,352 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <!-- page header -->
+  <head>
+    <meta charset="utf-8">
+    <title>Paper game</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+   						 <!-- Javascript to modify the DOM -->
+    <script>
+      //0 is blues first turn, 2 is reds first turn
+      var turncount=0;
+      var userSize=0;
+
+      function ChangeColor(){          
+
+        //this is my information register if you will
+        //0th positiion holds the state : Neutral , red, blue 
+        //also uses className for a similar purpose
+        //1st position holds row
+        //2nd position holds column number
+        let names=(this.id).split(",");
+        console.log(this.className+turncount);
+
+        if(CheckGame()){
+
+          //if it is blues first turn and clicking on a legal square
+          if(turncount==0 && names[0]=="Neutral" && this.className!="red" && this.className!="blue" && checkSurroundings(this)){
+
+            var cleanupforblue=document.getElementsByClassName("yesred");
+            if(cleanupforblue[0]!=null) { cleanupforblue[0].className="no";}
+            if(cleanupforblue[0]!=null) { cleanupforblue[0].className="no";}
+            //change the state of the squre to blue
+            this.style.backgroundColor="blue";   
+            this.className="blue"                 
+            turncount=1;  //pass the turn  
+
+            //if youre not touching the top
+            if(names[1]!=1){
+
+              var topCOORD=names[1]-1;//the one row above
+              var top =document.getElementById(names[0]+","+topCOORD+","+names[2]);//getting the "address" of the td we are looking for
+              //console.log(names[0]+","+topCOORD+","+names[2]); this is for error checking
+              //if the box above this is a neutral square
+
+              if(top.className=="no"){
+
+                top.style.backgroundColor="black";//make it visually obvious that the square is clickable
+                top.className="yes";//if the className is yes then we know it is usable for turn 2
+                //top.tagName="trouble";
+
+              }
+
+            }
+
+            //if youre not touching the left wall
+            if(names[2]!=1){
+              ////////////////////////The following are blocks of code similar to above, checking for left, right and below//////////////////
+              var leftCOORD=names[2]-1;
+              var left =document.getElementById(names[0]+","+names[1]+","+leftCOORD);   
+
+              if(left.className=="no"){
+
+                left.style.backgroundColor="black";
+                left.className="yes";
+                console.log(left.className);
+              }
+
+            }
+
+            if(names[2]!=userSize){
+              var rightCOORD=parseInt(names[2])+1;
+              var right =document.getElementById(names[0]+","+names[1]+","+rightCOORD);   
+
+              if(right.className=="no"){
+
+                right.style.backgroundColor="black";
+                right.className="yes";
+
+              }
+            }
+
+            if(names[1]!=userSize){
+
+              var botCOORD=parseInt(names[1])+1;
+              var bot =document.getElementById(names[0]+","+botCOORD+","+names[2]);
+
+              if(bot.className=="no"){
+                bot.style.backgroundColor="black";
+                bot.className="yes";
+                console.log("bot is" +bot.className)
+              }
+            }
+            var test=document.getElementsByClassName("yes");
+            console.log(test.length+"legal moves avaiolable")
+          }
+
+          ///////////// this is checking for blue players second turn.////////
+
+          if(turncount==1){
+            /// if this is a clickable square
+            if(this.className=="yes"){
+
+              //gets all clickable boxes 'ones that are adjacent to the one you just clicked'                    
+              var top1=document.getElementsByClassName("yes");                
+              console.log(top1);
+
+              //sets them all back to white
+              for(var i=0; i<top1.length;i++){
+                      top1[i].style.backgroundColor="white";                             
+              }
+              
+              //makes them all unclickable
+              for(var w=0; w<top1.length;w++){
+                top1[w].className="no";              
+              }
+                
+              this.style.backgroundColor="blue";//then the one that is selected becomes blue, visually and clickability wise
+              this.className="blue";
+              turncount=2;
+              console.log(top1.length +" after blue turn legal moves left")
+            }
+            else{
+              console.log("invalid choice"+turncount);
+            }
+          }
+            
+          //this is reds first turn, which is identical to blues, except its red instead.
+          if(turncount==2 && names[0]=="Neutral" && this.className!="blue" && this.className!="red"&& checkSurroundings(this)){
+
+            var cleanup=document.getElementsByClassName("yes");
+
+            //the list is dynamic, e.g because im chaning the class name. the items in th list
+            if(cleanup[0]!=null) { cleanup[0].className="no";}
+
+            //drop out, beacuse of incrementation, upto 2 elements remain, thus i am removing them
+            if(cleanup[0]!=null) { cleanup[0].className="no";}
+
+            console.log(this.id);
+
+            if(names[1]!=1){
+
+              var topCOORD=names[1]-1;
+
+              //basically if the squares were determined to bne legal
+              //you can place your second turn in them
+              var top =document.getElementById(names[0]+","+topCOORD+","+names[2]);
+              console.log(names[0]+","+topCOORD+","+names[2]);
+              if(top.className=="no"){
+                  top.style.backgroundColor="black";
+                  top.className="yesred";
+                }
+            }
+              
+            //these are checking for edges
+            if(names[2]!=1){
+              var leftCOORD=names[2]-1;
+              var left =document.getElementById(names[0]+","+names[1]+","+leftCOORD);   
+              console.log("left of red is" +left.className)                  
+              if(left.className=="no"){
+                left.style.backgroundColor="black";
+                left.className="yesred";
+              }
+            }
+
+            if(names[2]!=userSize){
+              var rightCOORD=parseInt(names[2])+1;
+              var right =document.getElementById(names[0]+","+names[1]+","+rightCOORD);                    
+              if(right.className=="no"){
+                right.style.backgroundColor="black";
+                right.className="yesred";
+              }
+            }
+
+            if(names[1]!=userSize){
+              var botCOORD=parseInt(names[1])+1;
+              var bot =document.getElementById(names[0]+","+botCOORD+","+names[2]);
+              if(bot.className=="no"){
+                bot.style.backgroundColor="black";
+                bot.className="yesred";
+              }
+            }        
+
+            //finally chaning the color, and incrementing turn count
+            this.style.backgroundColor="red";   
+            turncount=3;
+            this.className="red";           
+            
+          }
+
+          //reds final turn
+          if (turncount== 3){
+            if(this.className=="yesred"){
+              
+              //gets all clickable boxes 'ones that are adjacent to the one you just clicked'
+              //then the one that is selected becomes red, visually and clickability wise
+              this.style.backgroundColor="red";
+              this.className="red";
+              turncount=0;
+              var top2=document.getElementsByClassName("yesred");
+
+              //sets them all back to white
+              for(var q=0; q<top2.length;q++){
+                top2[q].style.backgroundColor="white";                        
+              }
+
+              //makes them all unclickable
+              for(var r=0; r<top2.length;r++){
+                top2[r].className="no";
+              }
+            
+            }
+            else{
+              console.log("invalid choice"+turncount);
+            }
+          }
+        }
+        else{
+          console.log("gameover");
+          if(turncount==0||turncount==3){
+           alert("red wins, blue cant make a move");
+          }
+          else{
+            alert("blue wins, red cant make a move");
+          }
+        }
+    }
+
+      function makeTable(){
+
+     		// get the first (and only) body node from the page
+        var gameMat=document.getElementById("gameMat");
+        gameMat.style.backgroundColor="white";
+        var body=document.getElementsByTagName("body")[0];
+
+      	// create a new table node
+        var table=document.createElement("table");
+
+       	// add styles for the table
+        table.style.border="1px solid black";
+        table.style.borderCollapse="collapse";
+        table.style.position="fixed";
+        table.style.width="80vh";        
+        table.style.maxwidth="80vh";
+        table.style.height="80vh";  
+        table.style.top="10vh";
+        table.style.left="10vh";
+        table.style.zIndex="1";
+
+       	// iterate for each row
+        for (var rowIndex=1; rowIndex<=userSize; rowIndex++){
+
+	 				// create a table row 
+	        var tableRow=document.createElement("tr");
+					// assign some data to the table row
+	        for (var colIndex=1; colIndex<=userSize; colIndex++){
+            
+	 					// create and style a table data node								      
+	          var tableData=document.createElement("td");
+	          //tableData.textContent=rowIndex+" X "+colIndex+" = "+rowIndex*colIndex;
+	          tableData.style.border="2px solid black";
+            tableData.id="Neutral"+","+rowIndex+","+colIndex;
+            tableData.className="no";
+            tableData.addEventListener("click", ChangeColor)
+
+	  				// add the table data to the current row				      
+	          tableRow.appendChild(tableData);
+
+	        }
+
+          // append the row to the table's list of children
+          table.appendChild(tableRow);
+        }
+				// append table to body's children
+	      body.appendChild(table);
+      }
+
+      //this is for checking the games completion.as well as checking if you can place in a sorrounded box
+      function checkSurroundings(item){
+
+        console.log(item.id);
+        let names=(item.id).split(",");
+        var outcome=false;
+
+        if(names[2]!=1){
+          var leftCOORD=names[2]-1;
+          var left =document.getElementById(names[0]+","+names[1]+","+leftCOORD);                     
+          if(left.className=="no" || left.className=="yesred"||left.className=="yes"){
+            outcome=true;
+          }
+        }
+
+        if(names[2]!=userSize){
+          var rightCOORD=parseInt(names[2])+1;
+          var right =document.getElementById(names[0]+","+names[1]+","+rightCOORD);                    
+          if(right.className=="no"|| right.className=="yesred"||right.className=="yes"){
+            outcome=true;
+          }
+        }
+
+        if(names[1]!=userSize){
+          var botCOORD=parseInt(names[1])+1;
+          var bot =document.getElementById(names[0]+","+botCOORD+","+names[2]);
+          if(bot.className=="no"|| bot.className=="yesred"||bot.className=="yes"){
+            outcome=true;
+          }
+        }
+
+        if(names[1]!=1){
+          var topCOORD=parseInt(names[1])-1;
+          var top =document.getElementById(names[0]+","+topCOORD+","+names[2]);
+          if(top.className=="no"|| top.className=="yesred"||top.className=="yes"){
+            outcome=true;
+          }
+        }
+
+      return outcome;            
+    }
+
+    //checks if there is any adjacent white squares
+    function CheckGame(names){
+      var allThings= document.getElementsByClassName("no");
+      let m=0;
+      while(m<allThings.length){
+        console.log("checking if game is over index  "+m);
+        if(checkSurroundings(allThings[m])){
+          return true;
+        }
+        else{
+          m++;
+        }
+      }
+      return false;
+    }
+    function start(){
+      userSize = prompt("Please enter N for the N x N grid", "10");      
+    }
+    </script>   
+  </head>
+
+  <!-- page body: completely empty! -->
+  <body onload="start()">
+
+    <button type="button" onclick="makeTable();">Click Me</button>
+    <div id="backBoard">
+      <div id="gameMat">
+        <div id="intro">There are 2 players, blue and red.<br> Per turn, each player places 2 adjacent blocks.<br> When one player cannot place a block, they lose.<br>Refresh to play again.<br></div>
+      </div>
+
+    </div>
+  </body>
+</html>
